@@ -6,22 +6,18 @@ using UnityEngine.Events;
 public class SoundVolume : MonoBehaviour
 {
     [SerializeField] private AudioSource _sound;
+
     private Coroutine _controlVolume;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void VolumeUp()
     {
-        if (collision.TryGetComponent<Player>(out Player player))
-        {
-            CoroutineControl(1);
-        }
+        int target = 1;
+        CoroutineControl(target);
     }
-
-    private void OnTriggerExit2D(Collider2D collision)
+    public void VolumeDown()
     {
-        if (collision.TryGetComponent<Player>(out Player player))
-        {
-            CoroutineControl(0);
-        }
+        int target = 0;
+        CoroutineControl(target);
     }
 
     private void CoroutineControl(float target)
@@ -31,17 +27,16 @@ public class SoundVolume : MonoBehaviour
             StopCoroutine(_controlVolume);
         }
 
-        _controlVolume = StartCoroutine(VolumeUpDown(target));
+        _controlVolume = StartCoroutine(VolumeChanger(target));
     }
 
-    private IEnumerator VolumeUpDown(float target)
-    {   
-        float _maxStrength = target;
+    private IEnumerator VolumeChanger(float target)
+    { 
         float _recoveryRate = 0.1f;
                 
         while (_sound.volume != target)
         {
-            _sound.volume = Mathf.MoveTowards(_sound.volume, _maxStrength, _recoveryRate * Time.deltaTime);
+            _sound.volume = Mathf.MoveTowards(_sound.volume, target, _recoveryRate * Time.deltaTime);
             yield return null;
         }              
     }
